@@ -238,6 +238,8 @@ a:hover { color: #c91623; text-decoration: none; }
     color: #666;
     margin-bottom: 10px;
 }
+.login-card .btn-reset:hover { background: #e8e8e8; }
+.login-card .btn-reset:focus { outline: 2px solid #c91623; outline-offset: 2px; }
 
 /* --- 商品详情 --- */
 .detail-container {
