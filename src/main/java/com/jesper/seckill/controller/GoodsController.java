@@ -15,12 +15,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.thymeleaf.spring4.context.SpringWebContext;
-import org.springframework.context.ApplicationContext;
-import org.thymeleaf.spring4.view.ThymeleafViewResolver;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.spring6.view.ThymeleafViewResolver;
+import org.thymeleaf.web.servlet.JakartaServletWebApplication;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -38,9 +38,6 @@ public class GoodsController {
 
     @Autowired
     GoodsService goodsService;
-
-    @Autowired
-    ApplicationContext applicationContext;
 
     @Autowired
     ThymeleafViewResolver thymeleafViewResolver;
@@ -64,8 +61,8 @@ public class GoodsController {
         model.addAttribute("goodsList", goodsList);
 
         //手动渲染
-        SpringWebContext ctx = new SpringWebContext(request, response,
-                request.getServletContext(), request.getLocale(), model.asMap(), applicationContext);
+        JakartaServletWebApplication webApp = JakartaServletWebApplication.buildApplication(request.getServletContext());
+        WebContext ctx = new WebContext(webApp.buildExchange(request, response), request.getLocale(), model.asMap());
         html = thymeleafViewResolver.getTemplateEngine().process("goods_list", ctx);
 
         if (!StringUtils.isEmpty(html)) {
@@ -115,8 +112,8 @@ public class GoodsController {
         model.addAttribute("remainSeconds", remainSeconds);
 
         //手动渲染
-        SpringWebContext ctx = new SpringWebContext(request, response,
-                request.getServletContext(), request.getLocale(), model.asMap(), applicationContext);
+        JakartaServletWebApplication webApp = JakartaServletWebApplication.buildApplication(request.getServletContext());
+        WebContext ctx = new WebContext(webApp.buildExchange(request, response), request.getLocale(), model.asMap());
         html = thymeleafViewResolver.getTemplateEngine().process("goods_detail", ctx);
         if (!StringUtils.isEmpty(html)) {
             redisService.set(GoodsKey.getGoodsDetail, "" + goodsId, html);

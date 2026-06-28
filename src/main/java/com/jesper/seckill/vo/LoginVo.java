@@ -2,7 +2,7 @@ package com.jesper.seckill.vo;
 
 import com.jesper.seckill.validator.IsMobile;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Created by jiangyunxiong on 2018/5/22.

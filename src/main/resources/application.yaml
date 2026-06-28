@@ -4,10 +4,10 @@ spring:
     prefix: classpath:/templates/
     suffix: .html
     cache: false
-    content-type: text/html
-    enabled: true
     encoding: UTF-8
-    mode: HTML5
+    mode: HTML
+    servlet:
+      content-type: text/html
   # druid
   datasource:
     url: jdbc:mysql://localhost:3306/seckill?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=Asia/Shanghai
@@ -50,15 +50,16 @@ spring:
         max-interval: 10000
         multiplier: 1.0
   # static resources
-  resources:
-    add-mappings: true
-    cache-period: 3600
-    chain:
-      cache: true
-      enabled: true
-      gzipped: true
-      html-application-cache: true
-    static-locations: classpath:/static/
+  web:
+    resources:
+      chain:
+        cache: true
+        enabled: true
+        compressed: true
+      cache:
+        period: 3600
+      static-locations: classpath:/static/
+      add-mappings: true
 
 # mybatis
 mybatis:
@@ -67,7 +68,7 @@ mybatis:
     map-underscore-to-camel-case: true
     default-fetch-size: 100
     default-statement-timeout: 3000
-  mapperLocations: classpath:com/jesper/seckill/mapper/*.xml
+  mapper-locations: classpath:com/jesper/seckill/mapper/*.xml
 
 # redis
 redis:

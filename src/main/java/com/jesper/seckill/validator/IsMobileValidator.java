@@ -3,8 +3,8 @@ package com.jesper.seckill.validator;
 import com.jesper.seckill.util.ValidatorUtil;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 /**
  * Created by jiangyunxiong on 2018/5/22.
