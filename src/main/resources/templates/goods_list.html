@@ -1,60 +1,56 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>商品列表</title>
+    <title>秒杀商品列表</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <!-- jquery -->
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
-    <!-- bootstrap -->
     <link rel="stylesheet" type="text/css" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
     <script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
-    <!-- jquery-validator -->
     <script type="text/javascript" th:src="@{/jquery-validation/jquery.validate.min.js}"></script>
     <script type="text/javascript" th:src="@{/jquery-validation/localization/messages_zh.min.js}"></script>
-    <!-- layer -->
     <script type="text/javascript" th:src="@{/layer/layer.js}"></script>
-    <!-- md5.js -->
     <script type="text/javascript" th:src="@{/js/md5.min.js}"></script>
-    <!-- common.js -->
     <script type="text/javascript" th:src="@{/js/common.js}"></script>
-    <style type="text/css">
-        html, body {
-            height: 100%;
-            width: 100%;
-        }
-
-        body {
-            background: url('/img/bg2.jpg') no-repeat;
-            background-size: 100% 100%;
-        }
-
-        #goodslist td {
-            border-top: 1px solid #39503f61;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/seckill.css}"/>
 </head>
 <body>
 
-<div class="panel panel-default" style="height:100%;background-color:rgba(222,222,222,0.8)">
-    <div class="panel-heading">秒杀商品列表</div>
-    <table class="table" id="goodslist">
-        <tr>
-            <td>商品名称</td>
-            <td>商品图片</td>
-            <td>商品原价</td>
-            <td>秒杀价</td>
-            <td>库存数量</td>
-            <td>详情</td>
-        </tr>
-        <tr th:each="goods,goodsStat : ${goodsList}">
-            <td th:text="${goods.goodsName}"></td>
-            <td><img th:src="@{${goods.goodsImg}}" width="100" height="100"/></td>
-            <td th:text="${goods.goodsPrice}"></td>
-            <td th:text="${goods.seckillPrice}"></td>
-            <td th:text="${goods.stockCount}"></td>
-            <td><a th:href="'/goods_detail.htm?goodsId='+${goods.id}">详情</a></td>
-        </tr>
-    </table>
+<header class="seckill-header">
+    <div class="logo"><i>&#9879;</i> 秒杀</div>
+    <div class="user-info">
+        <span class="nickname" th:if="${user != null}" th:text="${user.nickname}"></span>
+        <a th:if="${user == null}" href="/login/to_login">请登录</a>
+    </div>
+</header>
+
+<div class="seckill-banner">
+    <div class="title"><span class="icon-flash">&#9889;</span> 限时秒杀</div>
+    <div class="subtitle">全场超低价，手慢无！</div>
 </div>
+
+<div class="seckill-container">
+    <div class="seckill-card-row">
+        <div class="seckill-card" th:each="goods : ${goodsList}">
+            <a th:href="'/goods_detail.htm?goodsId=' + ${goods.id}">
+                <img class="card-img" th:src="@{${goods.goodsImg}}" th:alt="${goods.goodsName}"/>
+            </a>
+            <div class="card-body">
+                <div class="card-title" th:text="${goods.goodsName}"></div>
+                <div class="card-price">
+                    <span class="seckill-price">
+                        <span class="unit">￥</span><span th:text="${goods.seckillPrice}"></span>
+                    </span>
+                    <span class="origin-price" th:text="'￥' + ${goods.goodsPrice}"></span>
+                </div>
+                <div class="card-stock">
+                    <div class="stock-label" th:text="'剩余 ' + ${goods.stockCount} + ' 件'"></div>
+                </div>
+                <a th:href="'/goods_detail.htm?goodsId=' + ${goods.id}" class="btn btn-seckill">立即秒杀</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
