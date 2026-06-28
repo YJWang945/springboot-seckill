@@ -2,9 +2,22 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>秒杀失败</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/seckill.css}"/>
 </head>
 <body>
-秒杀失败：<p th:text="${errmsg}"></p>
+
+<header class="seckill-header">
+    <div class="logo"><a href="/goods/to_list" style="color:#fff;">&#9879; 秒杀</a></div>
+</header>
+
+<div class="fail-container">
+    <div class="fail-icon">&#9785;</div>
+    <h3>秒杀失败：<span th:text="${errmsg}"></span></h3>
+    <a href="/goods/to_list" class="btn-back">返回商品列表</a>
+</div>
+
 </body>
 </html>
