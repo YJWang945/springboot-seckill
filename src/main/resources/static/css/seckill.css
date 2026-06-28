@@ -110,7 +110,7 @@ a:hover { color: #c91623; text-decoration: none; }
 .seckill-card .card-title {
     font-size: 15px;
     color: #333;
-    height: 40px;
+    height: 42px;
     overflow: hidden;
     line-height: 1.4;
 }
@@ -142,10 +142,12 @@ a:hover { color: #c91623; text-decoration: none; }
     margin-bottom: 0;
     background: #ffe0e0;
     border-radius: 3px;
+    box-shadow: none;
 }
 .seckill-card .card-stock .progress-bar {
     background: linear-gradient(90deg, #c91623, #e1251b);
     border-radius: 3px;
+    box-shadow: none;
 }
 .seckill-card .btn-seckill {
     width: 100%;
@@ -155,14 +157,16 @@ a:hover { color: #c91623; text-decoration: none; }
     color: #fff;
     background: linear-gradient(180deg, #e1251b, #c91623);
     border: none;
-    border-radius: 20px;
+    border-radius: 22px;
     cursor: pointer;
     transition: opacity 0.2s;
 }
-.seckill-card .btn-seckill:hover { opacity: 0.9; color: #fff; }
+.seckill-card .btn-seckill:hover,
+.seckill-card .btn-seckill:focus { opacity: 0.9; color: #fff; outline: 2px solid #c91623; outline-offset: 2px; }
 .seckill-card .btn-seckill.disabled {
     background: #ccc;
     cursor: not-allowed;
+    opacity: 1;
 }
 
 /* --- 登录页 --- */
@@ -219,17 +223,18 @@ a:hover { color: #c91623; text-decoration: none; }
     color: #fff;
     background: linear-gradient(180deg, #e1251b, #c91623);
     border: none;
-    border-radius: 23px;
+    border-radius: 22px;
     cursor: pointer;
     margin-top: 8px;
 }
-.login-card .btn-login:hover { opacity: 0.9; color: #fff; }
+.login-card .btn-login:hover,
+.login-card .btn-login:focus { opacity: 0.9; color: #fff; outline: 2px solid #c91623; outline-offset: 2px; }
 .login-card .btn-reset {
     width: 100%;
     height: 40px;
     background: #f5f5f5;
     border: 1px solid #ddd;
-    border-radius: 20px;
+    border-radius: 22px;
     color: #666;
     margin-bottom: 10px;
 }
@@ -306,14 +311,16 @@ a:hover { color: #c91623; text-decoration: none; }
     color: #fff;
     background: linear-gradient(180deg, #e1251b, #c91623);
     border: none;
-    border-radius: 25px;
+    border-radius: 22px;
     cursor: pointer;
     margin-top: 15px;
 }
-.detail-info-side .btn-buy:hover { opacity: 0.9; color: #fff; }
+.detail-info-side .btn-buy:hover,
+.detail-info-side .btn-buy:focus { opacity: 0.9; color: #fff; outline: 2px solid #c91623; outline-offset: 2px; }
 .detail-info-side .btn-buy.disabled {
     background: #ccc;
     cursor: not-allowed;
+    opacity: 1;
 }
 
 /* --- 订单详情 --- */
@@ -365,7 +372,8 @@ a:hover { color: #c91623; text-decoration: none; }
     cursor: pointer;
     margin-top: 20px;
 }
-.order-card .btn-pay:hover { opacity: 0.9; color: #fff; }
+.order-card .btn-pay:hover,
+.order-card .btn-pay:focus { opacity: 0.9; color: #fff; outline: 2px solid #c91623; outline-offset: 2px; }
 
 /* --- 秒杀失败页 --- */
 .fail-container {
@@ -388,7 +396,8 @@ a:hover { color: #c91623; text-decoration: none; }
     border-radius: 22px;
     text-decoration: none;
 }
-.fail-container .btn-back:hover { color: #fff; opacity: 0.9; }
+.fail-container .btn-back:hover,
+.fail-container .btn-back:focus { color: #fff; opacity: 0.9; outline: 2px solid #c91623; outline-offset: 2px; }
 
 /* --- 响应式 --- */
 @media (max-width: 768px) {
