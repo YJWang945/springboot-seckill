@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker run *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git commit *)",
+      "Bash(git diff *)",
+      "Bash(git hash-object *)",
+      "Bash(git push *)",
+      "Bash(mvn compile *)",
+      "Bash(mvn spring-boot:run)",
+      "Bash(git reset *)",
+      "Bash(git checkout *)",
+      "Bash(cd *)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"D:\\java-project\\springboot-seckill-master\" && git add -A && git diff --staged --quiet || (git commit -m \"chore: auto-save session changes\" && git push origin master)"
+          }
+        ]
+      }
+    ]
+  }
+}
