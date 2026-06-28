@@ -8,6 +8,7 @@ import com.jesper.seckill.redis.RedisService;
 import com.jesper.seckill.redis.UserKey;
 import com.jesper.seckill.result.CodeMsg;
 import com.jesper.seckill.util.MD5Util;
+import com.jesper.seckill.util.PasswordUtil;
 import com.jesper.seckill.util.UUIDUtil;
 import com.jesper.seckill.vo.LoginVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,7 @@ public class UserService {
         //更新数据库
         User toBeUpdate = new User();
         toBeUpdate.setId(id);
-        toBeUpdate.setPassword(MD5Util.formPassToDBPass(formPass, user.getSalt()));
+        toBeUpdate.setPassword(PasswordUtil.encode(formPass));
         userMapper.update(toBeUpdate);
         //更新缓存：先删除再插入
         redisService.delete(UserKey.getById, ""+id);
@@ -77,12 +78,23 @@ public class UserService {
         if (user == null) {
             throw new GlobalException(CodeMsg.MOBILE_NOT_EXIST);
         }
-        //验证密码
+        //验证密码，BCrypt优先，存量MD5兜底并自动迁移
         String dbPass = user.getPassword();
-        String saltDB = user.getSalt();
-        String calcPass = MD5Util.formPassToDBPass(formPass, saltDB);
-        if (!calcPass.equals(dbPass)) {
-            throw new GlobalException(CodeMsg.PASSWORD_ERROR);
+        if (dbPass != null && dbPass.startsWith("$2a$")) {
+            if (!PasswordUtil.check(formPass, dbPass)) {
+                throw new GlobalException(CodeMsg.PASSWORD_ERROR);
+            }
+        } else {
+            String saltDB = user.getSalt();
+            String calcPass = MD5Util.formPassToDBPass(formPass, saltDB);
+            if (!calcPass.equals(dbPass)) {
+                throw new GlobalException(CodeMsg.PASSWORD_ERROR);
+            }
+            // 迁移到BCrypt
+            User toBeUpdate = new User();
+            toBeUpdate.setId(user.getId());
+            toBeUpdate.setPassword(PasswordUtil.encode(formPass));
+            userMapper.update(toBeUpdate);
         }
         //生成唯一id作为token
         String token = UUIDUtil.uuid();

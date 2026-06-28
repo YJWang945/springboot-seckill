@@ -2,6 +2,7 @@ package com.jesper.seckill.rabbitmq;
 
 import com.jesper.seckill.bean.SeckillOrder;
 import com.jesper.seckill.bean.User;
+import com.jesper.seckill.redis.OrderKey;
 import com.jesper.seckill.redis.RedisService;
 import com.jesper.seckill.service.GoodsService;
 import com.jesper.seckill.service.OrderService;
@@ -34,27 +35,45 @@ public class MQReceiver {
     @Autowired
     SeckillService seckillService;
 
-    @RabbitListener(queues=MQConfig.QUEUE)
+    @RabbitListener(queues=MQConfig.SECKILL_QUEUE)
     public void receive(String message){
         log.info("receive message:"+message);
         SeckillMessage m = RedisService.stringToBean(message, SeckillMessage.class);
         User user = m.getUser();
         long goodsId = m.getGoodsId();
 
-        GoodsVo goodsVo = goodsService.getGoodsVoByGoodsId(goodsId);
-        int stock = goodsVo.getStockCount();
-        if(stock <= 0){
+        // SETNX幂等锁，防止同一用户对同一商品的并发消费
+        String lockKey = "" + user.getId() + "_" + goodsId;
+        if (!redisService.setnx(OrderKey.seckillLock, lockKey, "1", 30)) {
             return;
         }
+        try {
+            GoodsVo goodsVo = goodsService.getGoodsVoByGoodsId(goodsId);
+            int stock = goodsVo.getStockCount();
+            if(stock <= 0){
+                return;
+            }
 
-        //判断重复秒杀
-        SeckillOrder order = orderService.getOrderByUserIdGoodsId(user.getId(), goodsId);
-        if(order != null) {
-            return;
+            //判断重复秒杀
+            SeckillOrder order = orderService.getOrderByUserIdGoodsId(user.getId(), goodsId);
+            if(order != null) {
+                return;
+            }
+
+            //减库存 下订单 写入秒杀订单
+            seckillService.seckill(user, goodsVo);
+        } catch (org.springframework.dao.DuplicateKeyException e) {
+            log.warn("Duplicate seckill order, userId={}, goodsId={}", user.getId(), goodsId);
+        } finally {
+            redisService.delete(OrderKey.seckillLock, lockKey);
         }
+    }
 
-        //减库存 下订单 写入秒杀订单
-        seckillService.seckill(user, goodsVo);
+    @RabbitListener(queues = MQConfig.ORDER_CANCEL_QUEUE)
+    public void receiveOrderCancel(String message) {
+        long orderId = Long.parseLong(message);
+        log.info("receive order cancel message, orderId:" + orderId);
+        orderService.cancelOrder(orderId);
     }
 
     @RabbitListener(queues = MQConfig.TOPIC_QUEUE1)

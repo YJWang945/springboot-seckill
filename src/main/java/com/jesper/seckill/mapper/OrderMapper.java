@@ -32,4 +32,7 @@ public interface OrderMapper {
     @Select("select * from sk_order_info where id = #{orderId}")
     public OrderInfo getOrderById(@Param("orderId")long orderId);
 
+    @Update("update sk_order_info set status = #{status} where id = #{orderId}")
+    public void updateStatus(@Param("orderId") long orderId, @Param("status") int status);
+
 }

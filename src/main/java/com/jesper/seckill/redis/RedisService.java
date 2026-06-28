@@ -2,11 +2,12 @@ package com.jesper.seckill.redis;
 
 import com.alibaba.fastjson2.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.params.SetParams;
+
+import java.util.List;
 
 /**
  * redis服务
@@ -124,6 +125,26 @@ public class RedisService {
     }
 
 
+    /**
+     * SET NX: 仅当key不存在时设置值，expireSeconds<=0表示永不过期
+     * @return true 设置成功，false key已存在
+     */
+    public boolean setnx(KeyPrefix prefix, String key, String value, int expireSeconds) {
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            String realKey = prefix.getPrefix() + key;
+            SetParams params = SetParams.setParams().nx();
+            if (expireSeconds > 0) {
+                params.ex(expireSeconds);
+            }
+            String result = jedis.set(realKey, value, params);
+            return "OK".equals(result);
+        } finally {
+            returnToPool(jedis);
+        }
+    }
+
     public static <T> String beanToString(T value) {
         if (value == null) {
             return null;
@@ -153,6 +174,19 @@ public class RedisService {
             return (T) str;
         } else {
             return JSON.toJavaObject(JSON.parseObject(str), clazz);
+        }
+    }
+
+    /**
+     * 执行Lua脚本，利用Redis单线程特性保证原子性
+     */
+    public Object execLua(String script, List<String> keys, List<String> args) {
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            return jedis.eval(script, keys, args);
+        } finally {
+            returnToPool(jedis);
         }
     }
 

@@ -2,10 +2,14 @@ package com.jesper.seckill.rabbitmq;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by jiangyunxiong on 2018/5/29.
@@ -21,6 +25,10 @@ public class MQConfig {
     public static final String TOPIC_QUEUE2 = "topic.queue2";
     public static final String TOPIC_EXCHANGE = "topicExchage";
 
+    public static final String ORDER_DELAY_QUEUE = "order.delay.queue";
+    public static final String ORDER_CANCEL_QUEUE = "order.cancel.queue";
+    public static final String ORDER_EXCHANGE = "order.exchange";
+
 
     /**
      * Direct模式 交换机Exchange
@@ -29,6 +37,11 @@ public class MQConfig {
     @Bean
     public Queue queue() {
         return new Queue(QUEUE, true);
+    }
+
+    @Bean
+    public Queue seckillQueue() {
+        return new Queue(SECKILL_QUEUE, true);
     }
 //    @Bean
 //    public Queue queue() {
@@ -60,5 +73,31 @@ public class MQConfig {
         return BindingBuilder.bind(topicQueue2()).to(topicExchange()).with("topic.#");
     }
 
+    /**
+     * 订单超时取消：延迟队列 + 死信交换机，TTL 15分钟后自动转入取消队列
+     */
+    @Bean
+    public Queue orderCancelQueue() {
+        return new Queue(ORDER_CANCEL_QUEUE, true);
+    }
+
+    @Bean
+    public Queue orderDelayQueue() {
+        Map<String, Object> args = new HashMap<>();
+        args.put("x-message-ttl", 15 * 60 * 1000);
+        args.put("x-dead-letter-exchange", ORDER_EXCHANGE);
+        args.put("x-dead-letter-routing-key", ORDER_CANCEL_QUEUE);
+        return new Queue(ORDER_DELAY_QUEUE, true, false, false, args);
+    }
+
+    @Bean
+    public DirectExchange orderExchange() {
+        return new DirectExchange(ORDER_EXCHANGE);
+    }
+
+    @Bean
+    public Binding orderCancelBinding() {
+        return BindingBuilder.bind(orderCancelQueue()).to(orderExchange()).with(ORDER_CANCEL_QUEUE);
+    }
 
 }

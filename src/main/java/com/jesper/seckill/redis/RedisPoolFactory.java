@@ -19,6 +19,7 @@ public class RedisPoolFactory {
     @Bean
     public JedisPool JedisPoolFactory(){
         JedisPoolConfig config = new JedisPoolConfig();
+        config.setJmxEnabled(false);
         config.setMaxIdle(redisConfig.getPoolMaxIdle());
         config.setMaxTotal(redisConfig.getPoolMaxTotal());
         config.setMaxWaitMillis(redisConfig.getPoolMaxWait() * 1000);
